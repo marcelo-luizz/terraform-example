@@ -4,7 +4,7 @@ provider "google" {
 }
 
 resource "google_storage_bucket" "meu_bucket" {
-  name          = "nome-unico-do-meu-bucket-12345"
+  name          = "nome-unico-do-meu-bucket-1234567"
   location      = "US" 
   force_destroy = true
 }
