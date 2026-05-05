@@ -1,14 +1,40 @@
+# atlantis.yaml - Este arquivo vai na RAIZ do repositório gitops-app-infra e gitops-core-infra
+# Ele diz ao Atlantis como tratar cada diretório de recurso
+
 version: 3
 automerge: false
 parallel_plan: true
-parallel_apply: false
+parallel_apply: false  # Apply sequencial por segurança
 
-# Configuração para descoberta automática de novos buckets
-autodiscovery:
-  # Isso diz ao Atlantis: "Toda pasta nova que você achar, use o workflow 'dev'"
-  mappings:
-    - dir_group: environments/dev/team-a/bucket
-      workflow: dev
+projects:
+  # Pattern matching dinâmico - Atlantis detecta automaticamente
+  # qualquer pasta com .tf dentro de environments/
+  - name: dev
+    dir: environments/dev/**/*
+    workspace: dev
+    workflow: dev
+    autoplan:
+      when_modified: ["*.tf", "*.tfvars"]
+      enabled: true
+    apply_requirements: [approved, mergeable]
+
+  # - name: homolog
+  #   dir: environments/homolog/**/*
+  #   workspace: homolog
+  #   workflow: homolog
+  #   autoplan:
+  #     when_modified: ["*.tf", "*.tfvars"]
+  #     enabled: true
+  #   apply_requirements: [approved, mergeable]
+
+  # - name: prod
+  #   dir: environments/prod/**/*
+  #   workspace: prod
+  #   workflow: prod
+  #   autoplan:
+  #     when_modified: ["*.tf", "*.tfvars"]
+  #     enabled: true
+  #   apply_requirements: [approved, approved, mergeable]  # 2 approvals para prod
 
 workflows:
   dev:
