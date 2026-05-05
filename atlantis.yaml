@@ -10,7 +10,7 @@ projects:
   # Pattern matching dinâmico - Atlantis detecta automaticamente
   # qualquer pasta com .tf dentro de environments/
   - name: dev
-    dir: environments/dev/**/*
+    dir: environments/dev/team-test/bucket/*
     workspace: dev
     workflow: dev
     autoplan:
