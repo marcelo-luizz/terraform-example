@@ -3,28 +3,18 @@ repos:
     apply_requirements: [mergeable]
     allowed_overrides: [workflow, apply_requirements]
     allow_custom_workflows: true
-    workflow: default
+    workflow: terragrunt-workflow
     pre_workflow_hooks:
       - run: echo "Running pre-workflow hook for repo $REPO_NAME"
     post_workflow_hooks:
       - run: echo "Running post-workflow hook for repo $REPO_NAME"
 
 workflows:
-  default:
+  terragrunt-workflow:
     plan:
       steps:
-      - env:
-          name: TF_WORKSPACE
-          command: echo $WORKSPACE
-      - env:    
-          name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT
-          value: atlantis-sa@<your-domain>.iam.gserviceaccount.com
-      - run:
-          terragrunt plan -out=$PLANFILE --terragrunt-non-interactive
+      - run: terragrunt init --terragrunt-non-interactive
+      - run: terragrunt plan -out=$PLANFILE --terragrunt-non-interactive
     apply:
       steps:
-      - env:
-          name: TF_WORKSPACE
-          command: echo $WORKSPACE
-      - run:
-          terragrunt apply $PLANFILE --terragrunt-non-interactive
+      - run: terragrunt apply $PLANFILE --terragrunt-non-interactive

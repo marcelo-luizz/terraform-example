@@ -9,7 +9,10 @@ services:
     command: http atlantis:4141
 
   atlantis:
-    image: ghcr.io/runatlantis/atlantis:v0.19.6
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    # image: ghcr.io/runatlantis/atlantis:v0.19.6
     ports:
       - "4141:4141"
     volumes:
