@@ -1,0 +1,18 @@
+version: "3"
+services:
+  ngrok:
+    image: ngrok/ngrok
+    env_file:
+      - .env
+    ports:
+      - "4040:4040"
+    command: http atlantis:4141
+
+  atlantis:
+    image: ghcr.io/runatlantis/atlantis:v0.19.6
+    ports:
+      - "4141:4141"
+    volumes:
+      - $PWD/config/:/config/
+    env_file:
+      - .env
