@@ -1,5 +1,5 @@
 version: 3
-automerge: true
+automerge: true # Configuração global (nível superior)
 delete_source_branch_on_merge: true
 parallel_plan: true
 parallel_apply: true
@@ -8,17 +8,14 @@ projects:
   - name: dev-environment
     dir: environments/gcp/dev/**
     workflow: terragrunt-workflow
-    automerge: true
-    apply_requirements: [mergeable] # Dev não precisa de aprovação conforme seu arquivo
+    apply_requirements: [mergeable]
 
   - name: homolog-environment
     dir: environments/gcp/homolog/**
     workflow: terragrunt-workflow
-    automerge: true
     apply_requirements: [approved, mergeable]
 
   - name: prod-environment
     dir: environments/gcp/prod/**
     workflow: terragrunt-workflow
-    automerge: false # Prod nunca mergeia sozinho
     apply_requirements: [approved, mergeable]
