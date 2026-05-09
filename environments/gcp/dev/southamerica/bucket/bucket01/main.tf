@@ -5,7 +5,7 @@ locals {
 }
 
 terraform {
-  source = "git::git@gitlab-new.jeitto.com.br:devops/jeitto-iac/terraform-gcp-compute-gce-instance.git?ref=v0.0.2"
+  source = "xxxxx"
 }
 
 include {
