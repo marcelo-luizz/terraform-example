@@ -10,17 +10,14 @@ projects:
   - name: dev-environment
     dir: environments/gcp/dev/**
     workflow: terragrunt-workflow
-    automerge: true
     apply_requirements: [mergeable]
 
   - name: homolog-environment
     dir: environments/gcp/homolog/**
     workflow: terragrunt-workflow
-    automerge: true
     apply_requirements: [approved, mergeable]
 
   - name: prod-environment
     dir: environments/gcp/prod/**
     workflow: terragrunt-workflow
-    automerge: false # PROD nunca mergeia sozinho
     apply_requirements: [approved, mergeable]
