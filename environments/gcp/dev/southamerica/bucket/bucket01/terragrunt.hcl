@@ -5,7 +5,7 @@ locals {
 }
 
 terraform {
-  source = "/home/marcelo/Desktop/terraform-example/terraform-modules/gcp/gcs"
+  source = "git::https://github.com/marcelo-luizz/terraform-example.git//terraform-modules/gcp/gcs?ref=main"
 }
 
 # git::https://github.com/marcelo-luizz/terraform-modules.git//provider/gcp/modules/gcs?ref=main
