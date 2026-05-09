@@ -13,8 +13,8 @@ include {
 }
 
 inputs = {
-  instance_name="devopsinstance0101"
-  machine_type="n1-standard-1"
+  instance_name="devopsinstance0101-hml"
+  machine_type="e2-standard-2"
   zone="southamerica-east1-a"
   image="ubuntu-2204-lts"
 }
