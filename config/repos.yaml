@@ -19,12 +19,12 @@ workflows:
       - env:    
           name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT
           value: atlantis-sa@<your-domain>.iam.gserviceaccount.com
-      - init
-      - plan:
-          extra_args: ["-var-file=tfvars/$WORKSPACE.tfvars"]
+      - run:
+          terragrunt plan -out=$PLANFILE --terragrunt-non-interactive
     apply:
       steps:
       - env:
           name: TF_WORKSPACE
           command: echo $WORKSPACE
-      - apply
+      - run:
+          terragrunt apply $PLANFILE --terragrunt-non-interactive
