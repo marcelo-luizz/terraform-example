@@ -1,26 +1,3 @@
-# repos:
-#   - id: github.com/marcelo-luizz/terraform-example
-#     apply_requirements: [mergeable]
-#     allowed_overrides: [workflow, apply_requirements]
-#     allow_custom_workflows: true
-#     workflow: terragrunt-workflow
-#     pre_workflow_hooks:
-#       - run: echo "Running pre-workflow hook for repo $REPO_NAME"
-#     post_workflow_hooks:
-#       - run: echo "Running post-workflow hook for repo $REPO_NAME"
-
-# workflows:
-#   terragrunt-workflow:
-#     plan:
-#       steps:
-#       - run: terragrunt init --terragrunt-non-interactive
-#       - run: terragrunt run-all plan -out=$PLANFILE --terragrunt-non-interactive
-#     apply:
-#       steps:
-#       - run: terragrunt run-all apply $PLANFILE --terragrunt-non-interactive
-
-
-
 repos:
   - id: github.com/marcelo-luizz/terraform-example
     apply_requirements: [mergeable]
@@ -45,6 +22,11 @@ workflows:
               echo "✅ Iniciando PLAN normal..."
               terragrunt run-all plan -out=$PLANFILE --terragrunt-non-interactive
             fi
+        # - run: |
+        #     IC_FILE="infracost-${PROJECT_NAME//\//-}-${PULL_NUM}.json"
+        #     infracost breakdown --path=$PLANFILE --format=json --out-file=$IC_FILE
+        #     infracost comment github --path=$IC_FILE --repo=$BASE_REPO_OWNER/$BASE_REPO_NAME --pull-request=$PULL_NUM --github-token=$GITHUB_TOKEN --behavior=update
+        #     rm $IC_FILE
     apply:
       steps:
         - run: |
