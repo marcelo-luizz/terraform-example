@@ -15,6 +15,4 @@ include {
 inputs = {
   bucket_name="devopsbucket01-tes02"
   storage_class="STANDARD"
-
-  
 }

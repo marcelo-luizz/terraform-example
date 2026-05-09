@@ -1,3 +1,26 @@
+# repos:
+#   - id: github.com/marcelo-luizz/terraform-example
+#     apply_requirements: [mergeable]
+#     allowed_overrides: [workflow, apply_requirements]
+#     allow_custom_workflows: true
+#     workflow: terragrunt-workflow
+#     pre_workflow_hooks:
+#       - run: echo "Running pre-workflow hook for repo $REPO_NAME"
+#     post_workflow_hooks:
+#       - run: echo "Running post-workflow hook for repo $REPO_NAME"
+
+# workflows:
+#   terragrunt-workflow:
+#     plan:
+#       steps:
+#       - run: terragrunt init --terragrunt-non-interactive
+#       - run: terragrunt run-all plan -out=$PLANFILE --terragrunt-non-interactive
+#     apply:
+#       steps:
+#       - run: terragrunt run-all apply $PLANFILE --terragrunt-non-interactive
+
+
+
 repos:
   - id: github.com/marcelo-luizz/terraform-example
     apply_requirements: [mergeable]
@@ -13,8 +36,22 @@ workflows:
   terragrunt-workflow:
     plan:
       steps:
-      - run: terragrunt init --terragrunt-non-interactive
-      - run: terragrunt run-all plan -out=$PLANFILE --terragrunt-non-interactive
+        - run: terragrunt init --terragrunt-non-interactive
+        - run: |
+            if [ "$COMMENT_ARGS" = "\-\d\e\s\t\r\o\y" ]; then
+              echo "⚠️ Iniciando PLAN de DESTRUIÇÃO..."
+              terragrunt run-all plan -destroy -out=$PLANFILE --terragrunt-non-interactive
+            else
+              echo "✅ Iniciando PLAN normal..."
+              terragrunt run-all plan -out=$PLANFILE --terragrunt-non-interactive
+            fi
     apply:
       steps:
-      - run: terragrunt run-all apply $PLANFILE --terragrunt-non-interactive
+        - run: |
+            if [ "$COMMENT_ARGS" = "\-\d\e\s\t\r\o\y" ]; then
+              echo "🚮 Executando DESTROY final..."
+              terragrunt run-all destroy --terragrunt-non-interactive -auto-approve
+            else
+              echo "🚀 Executando APPLY normal..."
+              terragrunt run-all apply $PLANFILE --terragrunt-non-interactive
+            fi
