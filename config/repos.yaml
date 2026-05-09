@@ -13,8 +13,8 @@ workflows:
   terragrunt-workflow:
     plan:
       steps:
-      - run: terragrunt init --terragrunt-non-interactive $COMMENT_ARGS
-      - run: terragrunt plan -out=$PLANFILE --terragrunt-non-interactive $COMMENT_ARGS
+      - run: terragrunt init --terragrunt-non-interactive
+      - run: terragrunt plan -out=$PLANFILE --terragrunt-non-interactive
     apply:
       steps:
-      - run: terragrunt apply $PLANFILE --terragrunt-non-interactive $COMMENT_ARGS
+      - run: terragrunt apply $PLANFILE --terragrunt-non-interactive
