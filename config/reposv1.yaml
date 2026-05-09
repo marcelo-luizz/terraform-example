@@ -1,7 +1,13 @@
 repos:
   - id: github.com/marcelo-luizz/terraform-example
+    apply_requirements: [mergeable]
     allowed_overrides: [workflow, apply_requirements]
     allow_custom_workflows: true
+    workflow: terragrunt-workflow
+    pre_workflow_hooks:
+      - run: echo "Running pre-workflow hook for repo $REPO_NAME"
+    post_workflow_hooks:
+      - run: echo "Running post-workflow hook for repo $REPO_NAME"
 
 workflows:
   terragrunt-workflow:

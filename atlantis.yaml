@@ -11,7 +11,7 @@ projects:
     dir: environments/gcp/dev/**
     workflow: terragrunt-workflow
     automerge: true
-    apply_requirements: [approved, mergeable]
+    apply_requirements: [mergeable]
 
   - name: homolog-environment
     dir: environments/gcp/homolog/**
