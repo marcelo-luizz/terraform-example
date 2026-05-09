@@ -1,5 +1,6 @@
 repos:
   - id: github.com/marcelo-luizz/terraform-example
+    workflow: terragrunt-workflow # Força o uso deste workflow por padrão
     allowed_overrides: [workflow, apply_requirements]
     allow_custom_workflows: true
 
@@ -9,12 +10,13 @@ workflows:
       steps:
         - run: terragrunt init --terragrunt-non-interactive
         - run: |
-            if [ "$COMMENT_ARGS" = "\-\d\e\s\t\r\o\y" ]; then
+            # Ajuste na regex para detectar o argumento de destroy corretamente
+            if echo "$COMMENT_ARGS" | grep -q "\-destroy"; then
               echo "⚠️ Iniciando PLAN de DESTRUIÇÃO..."
-              terragrunt run-all plan -destroy -out=$PLANFILE --terragrunt-non-interactive
+              terragrunt plan -destroy -out=$PLANFILE --terragrunt-non-interactive
             else
               echo "✅ Iniciando PLAN normal..."
-              terragrunt run-all plan -out=$PLANFILE --terragrunt-non-interactive
+              terragrunt plan -out=$PLANFILE --terragrunt-non-interactive
             fi
         - run: |
             terragrunt show -json $PLANFILE > plan.json
@@ -29,10 +31,10 @@ workflows:
     apply:
       steps:
         - run: |
-            if [ "$COMMENT_ARGS" = "\-\d\e\s\t\r\o\y" ]; then
+            if echo "$COMMENT_ARGS" | grep -q "\-destroy"; then
               echo "🚮 Executando DESTROY final..."
-              terragrunt run-all destroy --terragrunt-non-interactive -auto-approve
+              terragrunt destroy --terragrunt-non-interactive -auto-approve
             else
               echo "🚀 Executando APPLY normal..."
-              terragrunt run-all apply $PLANFILE --terragrunt-non-interactive
+              terragrunt apply $PLANFILE --terragrunt-non-interactive
             fi

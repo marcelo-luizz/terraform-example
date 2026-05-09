@@ -1,23 +1,24 @@
 version: 3
-# Configurações globais para este repositório
 automerge: true
 delete_source_branch_on_merge: true
 parallel_plan: true
 parallel_apply: true
 
 projects:
-  # O uso do ** garante o "Auto Discovery" dentro dessas pastas
   - name: dev-environment
     dir: environments/gcp/dev/**
     workflow: terragrunt-workflow
-    apply_requirements: [mergeable]
+    automerge: true
+    apply_requirements: [mergeable] # Dev não precisa de aprovação conforme seu arquivo
 
   - name: homolog-environment
     dir: environments/gcp/homolog/**
     workflow: terragrunt-workflow
+    automerge: true
     apply_requirements: [approved, mergeable]
 
   - name: prod-environment
     dir: environments/gcp/prod/**
     workflow: terragrunt-workflow
+    automerge: false # Prod nunca mergeia sozinho
     apply_requirements: [approved, mergeable]
