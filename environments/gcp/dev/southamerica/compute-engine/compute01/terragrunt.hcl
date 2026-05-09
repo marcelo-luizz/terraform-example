@@ -12,6 +12,7 @@ include {
   path = find_in_parent_folders("root.hcl")
 }
 
+
 inputs = {
   instance_name="devopsinstance-dev01"
   machine_type="e2-standard-2"

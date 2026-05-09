@@ -10,13 +10,12 @@ workflows:
       steps:
         - run: terragrunt init --terragrunt-non-interactive
         - run: |
-            # Ajuste na regex para detectar o argumento de destroy corretamente
-            if echo "$COMMENT_ARGS" | grep -q "\-destroy"; then
+            if [ "$COMMENT_ARGS" = "\-\d\e\s\t\r\o\y" ]; then
               echo "⚠️ Iniciando PLAN de DESTRUIÇÃO..."
-              terragrunt plan -destroy -out=$PLANFILE --terragrunt-non-interactive
+              terragrunt run-all plan -destroy -out=$PLANFILE --terragrunt-non-interactive
             else
               echo "✅ Iniciando PLAN normal..."
-              terragrunt plan -out=$PLANFILE --terragrunt-non-interactive
+              terragrunt run-all plan -out=$PLANFILE --terragrunt-non-interactive
             fi
         - run: |
             terragrunt show -json $PLANFILE > plan.json
@@ -31,10 +30,10 @@ workflows:
     apply:
       steps:
         - run: |
-            if echo "$COMMENT_ARGS" | grep -q "\-destroy"; then
+            if [ "$COMMENT_ARGS" = "\-\d\e\s\t\r\o\y" ]; then
               echo "🚮 Executando DESTROY final..."
-              terragrunt destroy --terragrunt-non-interactive -auto-approve
+              terragrunt run-all destroy --terragrunt-non-interactive -auto-approve
             else
               echo "🚀 Executando APPLY normal..."
-              terragrunt apply $PLANFILE --terragrunt-non-interactive
+              terragrunt run-all apply $PLANFILE --terragrunt-non-interactive
             fi
