@@ -1,12 +1,11 @@
+
 version: 3
-# Configurações globais para este repositório
-automerge: true
+automerge: true # Configuração global (nível superior)
 delete_source_branch_on_merge: true
 parallel_plan: true
 parallel_apply: true
 
 projects:
-  # O uso do ** garante o "Auto Discovery" dentro dessas pastas
   - name: dev-environment
     dir: environments/gcp/dev/**
     workflow: terragrunt-workflow
