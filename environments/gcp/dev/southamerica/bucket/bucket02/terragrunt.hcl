@@ -8,8 +8,6 @@ terraform {
   source = "git::https://github.com/marcelo-luizz/terraform-example.git//terraform-modules/gcp/gcs?ref=main"
 }
 
-git::https://github.com/marcelo-luizz/terraform-modules.git//provider/gcp/modules/gcs?ref=main
-
 include {
   path = find_in_parent_folders("root.hcl")
 }
