@@ -1,10 +1,18 @@
-provider "google" {
-  project = "devops-labs-397603"
-  region  = "us-central1"
+locals {
+  project_vars = read_terragrunt_config(find_in_parent_folders("gcp-project.hcl"))
+  region_vars = read_terragrunt_config(find_in_parent_folders("gcp-region.hcl"))
+  env_vars    =  read_terragrunt_config(find_in_parent_folders("env_vars.hcl"))
 }
 
-resource "google_storage_bucket" "meu_bucket" {
-  name          = "nome-unico-do-meu-bucket-12345617"
-  location      = "US" 
-  force_destroy = true
+terraform {
+  source = "git::git@gitlab-new.jeitto.com.br:devops/jeitto-iac/terraform-gcp-compute-gce-instance.git?ref=v0.0.2"
+}
+
+include {
+  path = find_in_parent_folders()
+}
+
+inputs = {
+  bucket_name=""
+  storage_class=""
 }
