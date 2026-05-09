@@ -1,0 +1,68 @@
+repos:
+  - id: github.com/marcelo-luizz/terraform-example
+    projects:
+      - dir: environments/dev/*
+        workflow: dev-workflow
+      - dir: environments/homolog/*
+        workflow: homolog-workflow
+      - dir: environments/prod/*
+        workflow: prod-workflow
+
+workflows:
+  dev-workflow:
+    plan:
+      steps:
+        - run: echo "Running pre-workflow hook for $REPO_NAME in DEV"
+        - env: { name: TF_WORKSPACE, value: dev }
+        - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-dev@seu-projeto.iam.gserviceaccount.com }
+        - init
+        - plan: { extra_args: ["-var-file=variables.tfvars"] }
+        - run: |
+            # Nome de arquivo único para suportar paralelismo
+            IC_FILE="infracost-${PROJECT_NAME//\//-}-${PULL_NUM}.json"
+            infracost breakdown --path=$PLANFILE --format=json --out-file=$IC_FILE
+            infracost comment github --path=$IC_FILE --repo=$BASE_REPO_OWNER/$BASE_REPO_NAME --pull-request=$PULL_NUM --github-token=$GITHUB_TOKEN --behavior=update
+            rm $IC_FILE
+        - run: echo "Running post-workflow hook for $REPO_NAME in DEV"
+    apply:
+      steps:
+        - env: { name: TF_WORKSPACE, value: dev }
+        - apply
+
+  homolog-workflow:
+    plan:
+      steps:
+        - run: echo "Running pre-workflow hook for $REPO_NAME in HOMOLOG"
+        - env: { name: TF_WORKSPACE, value: homolog }
+        - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-homolog@seu-projeto.iam.gserviceaccount.com }
+        - init
+        - plan: { extra_args: ["-var-file=variables.tfvars"] }
+        - run: |
+            IC_FILE="infracost-${PROJECT_NAME//\//-}-${PULL_NUM}.json"
+            infracost breakdown --path=$PLANFILE --format=json --out-file=$IC_FILE
+            infracost comment github --path=$IC_FILE --repo=$BASE_REPO_OWNER/$BASE_REPO_NAME --pull-request=$PULL_NUM --github-token=$GITHUB_TOKEN --behavior=update
+            rm $IC_FILE
+        - run: echo "Running post-workflow hook for $REPO_NAME in HOMOLOG"
+    apply:
+      steps:
+        - env: { name: TF_WORKSPACE, value: homolog }
+        - apply
+
+  prod-workflow:
+    plan:
+      steps:
+        - run: echo "Running pre-workflow hook for $REPO_NAME in PROD"
+        - env: { name: TF_WORKSPACE, value: prod }
+        - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-prod@seu-projeto.iam.gserviceaccount.com }
+        - init
+        - plan: { extra_args: ["-var-file=variables.tfvars"] }
+        - run: |
+            IC_FILE="infracost-${PROJECT_NAME//\//-}-${PULL_NUM}.json"
+            infracost breakdown --path=$PLANFILE --format=json --out-file=$IC_FILE
+            infracost comment github --path=$IC_FILE --repo=$BASE_REPO_OWNER/$BASE_REPO_NAME --pull-request=$PULL_NUM --github-token=$GITHUB_TOKEN --behavior=update
+            rm $IC_FILE
+        - run: echo "Running post-workflow hook for $REPO_NAME in PROD"
+    apply:
+      steps:
+        - env: { name: TF_WORKSPACE, value: prod }
+        - apply

@@ -1,0 +1,62 @@
+repos:
+  - id: github.com/marcelo-luizz/terragrunt-example
+    projects:
+      - dir: environments/dev/*
+        workflow: terragrunt-dev
+      - dir: environments/homolog/*
+        workflow: terragrunt-homolog
+      - dir: environments/prod/*
+        workflow: terragrunt-prod
+
+workflows:
+  terragrunt-dev:
+    plan:
+      steps:
+        - run: echo "Starting Terragrunt Plan for DEV"
+        - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-dev@seu-projeto.iam.gserviceaccount.com }
+        # Terragrunt não usa workspaces do TF da mesma forma, mas injetamos para o HCL se necessário
+        - env: { name: TF_VAR_env, value: dev } 
+        - run: terragrunt plan -out=$PLANFILE --terragrunt-non-interactive
+        - run: |
+            IC_FILE="infracost-${PROJECT_NAME//\//-}-${PULL_NUM}.json"
+            infracost breakdown --path=$PLANFILE --format=json --out-file=$IC_FILE
+            infracost comment github --path=$IC_FILE --repo=$BASE_REPO_OWNER/$BASE_REPO_NAME --pull-request=$PULL_NUM --github-token=$GITHUB_TOKEN --behavior=update
+            rm $IC_FILE
+    apply:
+      steps:
+        - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-dev@seu-projeto.iam.gserviceaccount.com }
+        - run: terragrunt apply $PLANFILE --terragrunt-non-interactive
+
+  terragrunt-homolog:
+    plan:
+      steps:
+        - run: echo "Starting Terragrunt Plan for HOMOLOG"
+        - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-homolog@seu-projeto.iam.gserviceaccount.com }
+        - env: { name: TF_VAR_env, value: homolog }
+        - run: terragrunt plan -out=$PLANFILE --terragrunt-non-interactive
+        - run: |
+            IC_FILE="infracost-${PROJECT_NAME//\//-}-${PULL_NUM}.json"
+            infracost breakdown --path=$PLANFILE --format=json --out-file=$IC_FILE
+            infracost comment github --path=$IC_FILE --repo=$BASE_REPO_OWNER/$BASE_REPO_NAME --pull-request=$PULL_NUM --github-token=$GITHUB_TOKEN --behavior=update
+            rm $IC_FILE
+    apply:
+      steps:
+        - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-homolog@seu-projeto.iam.gserviceaccount.com }
+        - run: terragrunt apply $PLANFILE --terragrunt-non-interactive
+
+  terragrunt-prod:
+    plan:
+      steps:
+        - run: echo "Starting Terragrunt Plan for PROD"
+        - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-prod@seu-projeto.iam.gserviceaccount.com }
+        - env: { name: TF_VAR_env, value: prod }
+        - run: terragrunt plan -out=$PLANFILE --terragrunt-non-interactive
+        - run: |
+            IC_FILE="infracost-${PROJECT_NAME//\//-}-${PULL_NUM}.json"
+            infracost breakdown --path=$PLANFILE --format=json --out-file=$IC_FILE
+            infracost comment github --path=$IC_FILE --repo=$BASE_REPO_OWNER/$BASE_REPO_NAME --pull-request=$PULL_NUM --github-token=$GITHUB_TOKEN --behavior=update
+            rm $IC_FILE
+    apply:
+      steps:
+        - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-prod@seu-projeto.iam.gserviceaccount.com }
+        - run: terragrunt apply $PLANFILE --terragrunt-non-interactive

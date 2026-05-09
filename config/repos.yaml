@@ -1,0 +1,30 @@
+repos:
+  - id: github.com/marcelo-luizz/terraform-example
+    apply_requirements: [mergeable]
+    allowed_overrides: [workflow, apply_requirements]
+    allow_custom_workflows: true
+    workflow: default
+    pre_workflow_hooks:
+      - run: echo "Running pre-workflow hook for repo $REPO_NAME"
+    post_workflow_hooks:
+      - run: echo "Running post-workflow hook for repo $REPO_NAME"
+
+workflows:
+  default:
+    plan:
+      steps:
+      - env:
+          name: TF_WORKSPACE
+          command: echo $WORKSPACE
+      - env:    
+          name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT
+          value: atlantis-sa@<your-domain>.iam.gserviceaccount.com
+      - init
+      - plan:
+          extra_args: ["-var-file=tfvars/$WORKSPACE.tfvars"]
+    apply:
+      steps:
+      - env:
+          name: TF_WORKSPACE
+          command: echo $WORKSPACE
+      - apply

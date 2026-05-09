@@ -1,0 +1,37 @@
+repos:
+  - id: github.com/marcelo-luizz/terraform-example
+    projects:
+      - dir: environments/dev/*
+        workflow: dev-workflow
+        autoplan: { enabled: true }
+      - dir: environments/homolog/*
+        workflow: homolog-workflow
+        autoplan: { enabled: true }
+      - dir: environments/prod/*
+        workflow: prod-workflow
+        autoplan: { enabled: true, apply_requirements: [approved, mergeable] }
+
+workflows:
+  dev-workflow:
+    plan:
+      steps:
+        - env: { name: TF_WORKSPACE, value: dev }
+        # - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-dev@seu-projeto.iam.gserviceaccount.com }
+        - init
+        - plan: { extra_args: ["-var-file=variables.tfvars"] }
+
+  homolog-workflow:
+    plan:
+      steps:
+        - env: { name: TF_WORKSPACE, value: homolog }
+        # - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-homolog@seu-projeto.iam.gserviceaccount.com }
+        - init
+        - plan: { extra_args: ["-var-file=variables.tfvars"] }
+
+  prod-workflow:
+    plan:
+      steps:
+        - env: { name: TF_WORKSPACE, value: prod }
+        # - env: { name: GOOGLE_IMPERSONATE_SERVICE_ACCOUNT, value: atlantis-prod@seu-projeto.iam.gserviceaccount.com }
+        - init
+        - plan: { extra_args: ["-var-file=variables.tfvars"] }
