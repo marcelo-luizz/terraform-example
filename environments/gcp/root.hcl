@@ -26,6 +26,7 @@ remote_state {
     location = local.gcp_region # Reigão onde o bucket será criado.
     bucket = "${local.project_id}-terraform-state" # Nome do Bucket (Lembrando que deve ser único).
     prefix = "${path_relative_to_include()}/terraform.tfstate"
+    skip_bucket_creation = false # Habilita a criação do bucket caso ele não exista
   }
   generate = {
     path      = "backend.tf"

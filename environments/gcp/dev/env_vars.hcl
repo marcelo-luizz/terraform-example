@@ -1,3 +1,3 @@
 locals {
- env = "integration"
+ env = "dev"
 }
