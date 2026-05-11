@@ -12,6 +12,7 @@ include {
   path = find_in_parent_folders("root.hcl")
 }
 
+
 inputs = {
   bucket_name="devopsbucket01-test01"
   storage_class="STANDARD"
