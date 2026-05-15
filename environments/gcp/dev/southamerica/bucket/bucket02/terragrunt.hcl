@@ -12,8 +12,9 @@ include {
   path = find_in_parent_folders("root.hcl")
 }
 
+
 inputs = {
   enabled=true
-  bucket_name="devopsbucket01-tes020202"
+  bucket_name="devopsbucket01"
   storage_class="STANDARD"
 }
