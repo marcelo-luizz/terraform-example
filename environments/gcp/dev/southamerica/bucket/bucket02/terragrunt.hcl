@@ -15,6 +15,6 @@ include {
 
 inputs = {
   enabled=false
-  bucket_name="devopsbucket01-tes020202"
+  bucket_name="devopsbucket01-tes001001"
   storage_class="STANDARD"
 }
