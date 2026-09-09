@@ -109,24 +109,23 @@ Ver arquivos neste diretório:
 ```mermaid
 sequenceDiagram
     participant Client
-    participant Apigee
+    participant Apigee Proxy
     participant VerifyAPIKey
-    participant APIProduct
-    participant Backend
+    participant KVM
+    participant API Externa (Serasa)
 
-    Client->>Apigee: GET /fastapi-example/endpoint
-    Note over Client,Apigee: Header: x-apikey: abc123
+    Client->>Apigee Proxy: POST /consulta-serasa
+    Note over Client,Apigee Proxy: Header: x-apikey: client-key-123
     
-    Apigee->>VerifyAPIKey: PreFlow
-    VerifyAPIKey->>APIProduct: Valida API Key
-    Note over VerifyAPIKey,APIProduct: Verifica se key pertence a<br/>API Product do ambiente
+    Apigee Proxy->>VerifyAPIKey: Valida API Key do cliente
+    VerifyAPIKey-->>Apigee Proxy: ✓ Válida
     
-    alt API Key inválida ou de outro ambiente
-        APIProduct-->>Client: 401 Unauthorized
-    else API Key válida para o ambiente
-        VerifyAPIKey->>Apigee: Continue
-        Apigee->>Backend: Forward request
-        Backend-->>Apigee: Response
-        Apigee-->>Client: Response
-    end
+    Apigee Proxy->>KVM: GetKVMValue(serasa-api-key)
+    KVM-->>Apigee Proxy: serasa-key-xyz
+    
+    Apigee Proxy->>API Externa (Serasa): POST /api/consulta
+    Note over Apigee Proxy,API Externa (Serasa): Header: Authorization: Bearer serasa-key-xyz
+    
+    API Externa (Serasa)-->>Apigee Proxy: Response
+    Apigee Proxy-->>Client: Response
 ```
