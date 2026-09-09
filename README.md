@@ -107,22 +107,36 @@ Ver arquivos neste diretório:
 - **Drift detection:** Cron job que roda `terragrunt plan` e alerta no Slack
 - 
 ```mermaid
-graph TB
-    A[Push to GitHub] --> B{Branch?}
+sequenceDiagram
+    participant Client
+    participant Apigee
+    participant VerifyAPIKey
+    participant BlockInProd
+    participant Backend
+
+    Client->>Apigee: GET /fastapi-example/endpoint
+    Note over Client,Apigee: Header: x-apikey: abc123
     
-    B -->|develop| C[jeitto-apigee-non-prod]
-    B -->|release| C
-    B -->|main| D[jeitto-apigee-prod]
+    Apigee->>VerifyAPIKey: PreFlow
+    VerifyAPIKey->>VerifyAPIKey: Valida API Key
+    alt API Key inválida
+        VerifyAPIKey-->>Client: 401 Unauthorized
+    else API Key válida
+        VerifyAPIKey->>Apigee: Continue
+    end
     
-    C --> E[Upload Bundle<br/>Create Revision X]
-    D --> F[Upload Bundle<br/>Create Revision Y]
-    
-    E --> G[Deploy to dev1<br/>Revision X]
-    E --> H[Deploy to homolog1<br/>Revision X]
-    
-    F --> I[Deploy to prod1<br/>Revision Y]
-    
-    G --> J[✅ Dev Ready]
-    H --> K[✅ Homolog Ready]
-    I --> L[✅ Prod Ready]
+    alt Endpoint é /liveness ou /readiness
+        Apigee->>BlockInProd: Check environment
+        alt Environment = prod1
+            BlockInProd-->>Client: 403 Forbidden
+        else Environment = dev1 ou homolog1
+            Apigee->>Backend: Forward request
+            Backend-->>Apigee: 200 OK
+            Apigee-->>Client: 200 OK
+        end
+    else Endpoint normal
+        Apigee->>Backend: Forward request
+        Backend-->>Apigee: Response
+        Apigee-->>Client: Response
+    end
 ```
