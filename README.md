@@ -107,25 +107,21 @@ Ver arquivos neste diretório:
 - **Drift detection:** Cron job que roda `terragrunt plan` e alerta no Slack
 - 
 ```mermaid
-sequenceDiagram
-    participant Client
-    participant Apigee Proxy
-    participant VerifyAPIKey
-    participant KVM
-    participant API Externa (Serasa)
-
-    Client->>Apigee Proxy: POST /consulta-serasa
-    Note over Client,Apigee Proxy: Header: x-apikey: client-key-123
+graph TB
+    A[Push to GitHub] --> B{Branch?}
     
-    Apigee Proxy->>VerifyAPIKey: Valida API Key do cliente
-    VerifyAPIKey-->>Apigee Proxy: ✓ Válida
+    B -->|develop/feature| C[jeitto-apigee-non-prod]
+    B -->|main| D[jeitto-apigee-prod]
     
-    Apigee Proxy->>KVM: GetKVMValue(serasa-api-key)
-    KVM-->>Apigee Proxy: serasa-key-xyz
+    C --> E[Upload Bundle<br/>Create Revision X]
+    D --> F[Upload Bundle<br/>Create Revision Y]
     
-    Apigee Proxy->>API Externa (Serasa): POST /api/consulta
-    Note over Apigee Proxy,API Externa (Serasa): Header: Authorization: Bearer serasa-key-xyz
+    E --> G[Deploy to dev1<br/>Revision X]
+    E --> H[Deploy to homolog1<br/>Revision X]
     
-    API Externa (Serasa)-->>Apigee Proxy: Response
-    Apigee Proxy-->>Client: Response
+    F --> I[Deploy to prod1<br/>Revision Y]
+    
+    G --> J[✅ Dev Ready]
+    H --> K[✅ Homolog Ready]
+    I --> L[✅ Prod Ready]
 ```
