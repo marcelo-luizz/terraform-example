@@ -110,7 +110,8 @@ Ver arquivos neste diretório:
 graph TB
     A[Push to GitHub] --> B{Branch?}
     
-    B -->|develop/feature| C[jeitto-apigee-non-prod]
+    B -->|develop| C[jeitto-apigee-non-prod]
+    B -->|release| C
     B -->|main| D[jeitto-apigee-prod]
     
     C --> E[Upload Bundle<br/>Create Revision X]
