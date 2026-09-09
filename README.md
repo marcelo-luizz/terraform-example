@@ -106,7 +106,7 @@ Ver arquivos neste diretório:
 - **Lock de state:** Gerenciado automaticamente pelo GCS backend
 - **Drift detection:** Cron job que roda `terragrunt plan` e alerta no Slack
 - 
-
+```mermaid
 graph TB
     A[Código no GitHub] -->|Push para branch| B[GitHub Actions]
 
@@ -123,3 +123,4 @@ graph TB
     G --> J[API Product Dev<br/>API Keys Dev]
     H --> K[API Product Homolog<br/>API Keys Homolog]
     I --> L[API Product Prod<br/>API Keys Prod]
+```
