@@ -107,20 +107,26 @@ Ver arquivos neste diretório:
 - **Drift detection:** Cron job que roda `terragrunt plan` e alerta no Slack
 - 
 ```mermaid
-graph TB
-    A[Código no GitHub] -->|Push para branch| B[GitHub Actions]
+sequenceDiagram
+    participant Client
+    participant Apigee
+    participant VerifyAPIKey
+    participant APIProduct
+    participant Backend
 
-    B -->|Determina ambiente| C{Branch}
-
-    C -->|develop| D[Deploy Dev]
-    C -->|release| E[Deploy Homolog]
-    C -->|main| F[Deploy Prod]
-
-    D --> G[Apigee Non-Prod<br/>env: dev1<br/>proxy: fastapi-example]
-    E --> H[Apigee Non-Prod<br/>env: homolog1<br/>proxy: fastapi-example]
-    F --> I[Apigee Prod<br/>env: prod1<br/>proxy: fastapi-example]
-
-    G --> J[API Product Dev<br/>API Keys Dev]
-    H --> K[API Product Homolog<br/>API Keys Homolog]
-    I --> L[API Product Prod<br/>API Keys Prod]
+    Client->>Apigee: GET /fastapi-example/endpoint
+    Note over Client,Apigee: Header: x-apikey: abc123
+    
+    Apigee->>VerifyAPIKey: PreFlow
+    VerifyAPIKey->>APIProduct: Valida API Key
+    Note over VerifyAPIKey,APIProduct: Verifica se key pertence a<br/>API Product do ambiente
+    
+    alt API Key inválida ou de outro ambiente
+        APIProduct-->>Client: 401 Unauthorized
+    else API Key válida para o ambiente
+        VerifyAPIKey->>Apigee: Continue
+        Apigee->>Backend: Forward request
+        Backend-->>Apigee: Response
+        Apigee-->>Client: Response
+    end
 ```
