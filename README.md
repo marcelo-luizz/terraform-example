@@ -105,3 +105,17 @@ Ver arquivos neste diretório:
 - **Logs:** `kubectl logs -f deploy/atlantis -n atlantis`
 - **Lock de state:** Gerenciado automaticamente pelo GCS backend
 - **Drift detection:** Cron job que roda `terragrunt plan` e alerta no Slack
+
+```mermaid
+graph TB
+    A[Código no GitHub] -->|Push para branch| B[GitHub Actions]
+    B -->|Determina ambientes| C{Branch}
+    C -->|develop| D[Deploy Dev]
+    C -->|release| E[Deploy Homolog]
+    C -->|main| F[Deploy Prod]
+    D --> F[Apigee Non-Prod<br/>proxy: fastapi-example<br/>envs: dev1 + homolog1]
+    E --> G[Apigee Prod<br/>proxy: fastapi-example<br/>env: prod1]
+    F --> H[API Product Dev<br/>API Keys Dev]
+    F --> I[API Product Homolog<br/>API Keys Homolog]
+    G --> J[API Product Prod<br/>API Keys Prod]
+```
