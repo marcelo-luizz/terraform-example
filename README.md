@@ -105,7 +105,7 @@ Ver arquivos neste diretório:
 - **Logs:** `kubectl logs -f deploy/atlantis -n atlantis`
 - **Lock de state:** Gerenciado automaticamente pelo GCS backend
 - **Drift detection:** Cron job que roda `terragrunt plan` e alerta no Slack
-
+- 
 ```mermaid
 graph TB
     A[Código no GitHub] -->|Push para branch| B[GitHub Actions]
@@ -119,3 +119,4 @@ graph TB
     F --> I[API Product Homolog<br/>API Keys Homolog]
     G --> J[API Product Prod<br/>API Keys Prod]
 ```
+
