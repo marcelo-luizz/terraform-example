@@ -106,17 +106,20 @@ Ver arquivos neste diretório:
 - **Lock de state:** Gerenciado automaticamente pelo GCS backend
 - **Drift detection:** Cron job que roda `terragrunt plan` e alerta no Slack
 - 
-```mermaid
+
 graph TB
     A[Código no GitHub] -->|Push para branch| B[GitHub Actions]
-    B -->|Determina ambientes| C{Branch}
+
+    B -->|Determina ambiente| C{Branch}
+
     C -->|develop| D[Deploy Dev]
     C -->|release| E[Deploy Homolog]
     C -->|main| F[Deploy Prod]
-    D --> F[Apigee Non-Prod<br/>proxy: fastapi-example<br/>envs: dev1 + homolog1]
-    E --> G[Apigee Prod<br/>proxy: fastapi-example<br/>env: prod1]
-    F --> H[API Product Dev<br/>API Keys Dev]
-    F --> I[API Product Homolog<br/>API Keys Homolog]
-    G --> J[API Product Prod<br/>API Keys Prod]
-```
 
+    D --> G[Apigee Non-Prod<br/>env: dev1<br/>proxy: fastapi-example]
+    E --> H[Apigee Non-Prod<br/>env: homolog1<br/>proxy: fastapi-example]
+    F --> I[Apigee Prod<br/>env: prod1<br/>proxy: fastapi-example]
+
+    G --> J[API Product Dev<br/>API Keys Dev]
+    H --> K[API Product Homolog<br/>API Keys Homolog]
+    I --> L[API Product Prod<br/>API Keys Prod]
